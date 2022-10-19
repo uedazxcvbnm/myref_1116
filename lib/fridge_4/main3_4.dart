@@ -58,7 +58,7 @@ class _homePage4 extends State<homePage4> {
           home: Scaffold(
             body: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              /*children: <Widget>[
+              children: <Widget>[
                 //通知画面
                 //Containerが無かったので、childに赤線が入っていた
                 Container(
@@ -82,7 +82,7 @@ class _homePage4 extends State<homePage4> {
                     },
                   ),
                 ),
-              ],*/
+              ],
             ),
           ),
         );

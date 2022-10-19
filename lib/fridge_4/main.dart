@@ -31,9 +31,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riv;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final GlobalKey<NavigatorState> navBarGlobalKey = GlobalKey<NavigatorState>();
 
@@ -42,15 +39,9 @@ void main() async {
   //Stetho.initialize();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(
-    const riv.ProviderScope(child: MyApp()),
+    riv.ProviderScope(child: MyApp()),
   );
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
 }
 
 class MyApp extends StatelessWidget {
@@ -586,15 +577,5 @@ class _MyHomePage extends State<MyHomePage> {
         ),
       ),
     );
-  }
-}
-
-class FirebaseMessagingService {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  void fcmGetToken() async {
-    /// モバイル向け
-    final fcmToken = await messaging.getToken();
-    print(fcmToken);
   }
 }
