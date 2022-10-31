@@ -58,31 +58,31 @@ class _homePage4 extends State<homePage4> {
           home: Scaffold(
             body: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              /*children: <Widget>[
-                //通知画面
-                //Containerが無かったので、childに赤線が入っていた
-                Container(
-                  child: OutlinedButton(
-                    child: Text(
-                      "通知日付設定",
-                      style: TextStyle(
-                        fontSize: 32,
-                      ),
+              //children: <Widget>[
+              //通知画面
+              //Containerが無かったので、childに赤線が入っていた
+              /*return Container(
+                child: OutlinedButton(
+                  child: Text(
+                    "通知日付設定",
+                    style: TextStyle(
+                      fontSize: 32,
                     ),
-                    onPressed: () async {
-                      await DatePicker.showDatePicker(context,
-                          showTitleActions: true,
-                          locale: LocaleType.jp,
-                          currentTime: DateTime.now(),
-                          onChanged: (time) {}, onConfirm: (time) {
-                        setSheetState(() {
-                          selectDateTime = time;
-                        });
-                      });
-                    },
                   ),
+                  onPressed: () async {
+                    await DatePicker.showDatePicker(context,
+                        showTitleActions: true,
+                        locale: LocaleType.jp,
+                        currentTime: DateTime.now(),
+                        onChanged: (time) {}, onConfirm: (time) {
+                      setSheetState(() {
+                        selectDateTime = time;
+                      });
+                    });
+                  },
                 ),
-              ],*/
+              );*/
+              //],
             ),
           ),
         );

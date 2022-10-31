@@ -224,6 +224,7 @@ class HomeState extends State<HomeWidget> {
   }
 }
 
+//https://zenn.dev/ryouhei_furugen/articles/ebcd36964b0182
 class Material {
   // ドキュメントを扱うDocumentSnapshotを引数にしたコンストラクタを作る
   //聞くしかない
@@ -308,10 +309,11 @@ class _MyHomePage extends State<MyHomePage> {
     });
   }
 
-  var _selectedvalue = null;
+  //var _selectedvalue = 1;
 
   //仮
-  var counter = 0;
+  var documentID = 0;
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -377,9 +379,115 @@ class _MyHomePage extends State<MyHomePage> {
                           Text('ID' + material[index].id.toString()),
                           Text(material[index].name.toString()),
                           Text('保存期間' + material[index].exday.toString() + '日'),
+                          //Container(
+                          GestureDetector(
+                            child: InkWell(
+                              //SpringButtonType.WithOpacity,
+                              //タップエフェクト　色がピンクにならないけど、色は透明の方がいい
+                              //https://www.choge-blog.com/programming/flutterinkwelltapeffectcolor/
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                /*await FirebaseFirestore.instance
+                                          .collection('refri')
+                                          .doc('id_abc')
+                                          .set({
+                                        'id': 4,
+                                        'date': '2022/10/7',
+                                        'name': 'オクラ',
+                                      });*/
+                                //今日の日付
+                                var now = DateTime.now();
+                                //日付の表示形式
+                                var _now = DateFormat('yyyy-MM-dd').format(now);
+                                //stringからDateTimeに変換
+                                var _nowDate = DateTime.parse(_now);
+
+                                //一時的なテスト 10日前
+                                //https://qiita.com/seiboy/items/7b632103088c5ed65082
+                                //_nowDate = _nowDate.add(Duration(days: 1) * -1);
+                                //_nowDate =_nowDate.add(Duration(days: 1) * 1);
+                                //_nowDate=_nowDate.add(Duration(days:2)*1);
+
+                                //firebaseで使用する場合、var sql3の定義が悪かった
+                                //var sql3 = material[index].id;
+                                int sql4 = material[index].exday;
+
+                                //賞味期限の計算　賞味期限＝今日の日付+materialテーブルのexdayカラム
+                                var _time = _nowDate.add(Duration(days: sql4));
+                                var _nowtime =
+                                    DateFormat('yyyy-MM-dd').format(_time);
+
+                                documentID++;
+
+                                await FirebaseFirestore.instance
+                                    .collection('refri')
+                                    .doc(documentID.toString())
+                                    .set({
+                                  //'id': material[index].id.toString(),
+                                  'id': documentID,
+                                  'date': _nowtime.toString(),
+                                  //'name': material[index].name.toString(),
+                                  'name': material[index].name,
+                                });
+
+                                //食品の個数　プラスボタンを1回タップしたら、食品の登録量が1個増える
+
+                                //var _counter = _memolist3[index].count + 1;
+
+                                //ちょっと進んだ
+                                //既に登録されている食品と同じdateのものがない場合
+                                //https://qiita.com/takois/items/6cf59811d3af5b1d33aa
+                                /*if (_nowtime != _memolist3[index].date) {
+                                            _selectedvalue = null;
+                                          } else {
+                                            _selectedvalue = _memolist3[index].id;
+                                          }*/
+                                /*if (_nowtime != refri[index].date) {
+                                            _selectedvalue = null;
+                                          } else {
+                                            _selectedvalue = refri[index].id;
+                                          }
+                                          //else{
+                                          var update_refri2 = Refri(
+                                              //id: _memoList[index].id,
+                                              id: _selectedvalue,
+                                              //count: _counter,
+                                              date: _nowtime.toString(),
+                                              name: refri[index].name);
+
+                                          //データベースをアップデート
+                                          await Refri_1.insertMemo(update_refri2);
+                                          //}
+                                          //データの取得
+                                          final List<Refri2> memos2 =
+                                              await Refri2.getMemos2();
+
+                                          super.setState(() {
+                                            //_selectedvalue_id = null;
+                                            //_memolist3 = memos2;
+                                            _memolist3 = memos2;
+                                            //setState(() {});
+                                          });
+                                        },*/
+                              },
+
+                              child: Container(
+                                width: 90,
+                                height: 100,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                        material[index].image.toString()),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+
                           //Text(material[index].image.toString()),
                           //Row(
-                          ElevatedButton(
+                          /*ElevatedButton(
                               child: Text('追加'),
                               onPressed: () async {
                                 await FirebaseFirestore.instance
@@ -391,8 +499,8 @@ class _MyHomePage extends State<MyHomePage> {
                                   'name': 'オクラ',
                                 });
                               }),
-                          //),
-                          Row(
+                          //),*/
+                          /*Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               /*GestureDetector(
@@ -480,7 +588,7 @@ class _MyHomePage extends State<MyHomePage> {
                                 iconSize: 20,*/
                               ),*/
                             ],
-                          ),
+                          ),*/
                           //materialテーブルのid
                           /*Text('ID${_memolist2[index].id.toString()}'),
                                                 //materialテーブルのexday 保存期間の基準

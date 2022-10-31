@@ -214,6 +214,7 @@ class MainModel extends ChangeNotifier {
   List<Refri> refri = [];
   Future<void> fetchrefri() async {
     // Firestoreからコレクション'books'(QuerySnapshot)を取得してdocsに代入。
+    //final docs = await FirebaseFirestore.instance.collection('refri').get();
     final docs = await FirebaseFirestore.instance.collection('refri').get();
 
     // getter docs: docs(List<QueryDocumentSnapshot<T>>型)のドキュメント全てをリストにして取り出す。
@@ -259,13 +260,13 @@ class _NextPageState extends State<NextPage> {
   }
 
   //id番号
-  var _selectedvalue_id;
+  var _selectedvalue_id;*/
 
   //非同期関数定義
   int apple_counter = 0;
   var _now = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-  var _isAscending = true;
+  /*var _isAscending = true;
   var _currentSortColumn = 0;
 
   //引っ張って更新https://note.com/hatchoutschool/n/n67eb3d9106f1
@@ -283,12 +284,65 @@ class _NextPageState extends State<NextPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ChangeNotifierProvider<MainModel>(
-        create: (_) => MainModel()..fetchrefri(),
-        child: Scaffold(
-          body: Consumer<MainModel>(
+    //return MaterialApp(
+    return Scaffold(
+      body: Column(
+        children: [
+          /*Container(
+            padding: EdgeInsets.all(8),
+            child: Text('ログイン情報：${user.email}'),
+          ),*/
+          Expanded(
+            // FutureBuilder
+            // 非同期処理の結果を元にWidgetを作れる
+            child: StreamBuilder<QuerySnapshot>(
+              // 投稿メッセージ一覧を取得（非同期処理）
+              // 投稿日時でソート
+              stream:
+                  FirebaseFirestore.instance.collection('refri').snapshots(),
+              builder: (context, snapshot) {
+                // データが取得できた場合
+                if (snapshot.hasData) {
+                  final List<DocumentSnapshot> documents = snapshot.data!.docs;
+                  // 取得した投稿メッセージ一覧を元にリスト表示
+                  return ListView(
+                    children: documents.map((document) {
+                      return Card(
+                        child: ListTile(
+                            //children: <Widget>[
+                            leading: Text(document['id'].toString()),
+                            title: Text(document['name'].toString()),
+                            subtitle: Text(document['date'].toString()),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () async {
+                                // 投稿メッセージのドキュメントを削除
+                                await FirebaseFirestore.instance
+                                    .collection('refri')
+                                    .doc(document.id.toString())
+                                    .delete();
+                              },
+                            )
+                            //],
+                            ),
+                      );
+                    }).toList(),
+                  );
+                }
+                // データが読込中の場合
+                return Center(
+                  child: Text('読込中...'),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      //debugShowCheckedModeBanner: false,
+      //home: ChangeNotifierProvider<MainModel>(
+      //create: (_) => MainModel()..fetchrefri(),
+
+      /*body: Consumer<MainModel>(
             //child: Column(
             //children: [
             /*Container(
@@ -329,45 +383,43 @@ class _NextPageState extends State<NextPage> {
                         //count!=0は動く
                         //https://zenn.dev/taji/articles/d1d94b5efbed35
                         if (refri[index].date != null) ...[
-                          /*if (DateTime.parse(_now).isBefore(
-                                          DateTime.parse(
-                                              _memolist3[index].date))) ...[*/
-                          //refriテーブルのid
-                          //children: <Widget>[
-                          //title: Text(refri[index].id.toString()),
-                          Text('id' + refri[index].id.toString()),
-                          //subtitle: Text(refri[index].date.toString()),
-                          Text(refri[index].date.toString()),
-                          Text(refri[index].name.toString()),
-                          ElevatedButton(
-                            child: Text('ドキュメント削除'),
-                            onPressed: () async {
-                              // ドキュメント削除
-                              await FirebaseFirestore.instance
-                                  .collection('refri')
-                                  .doc('id_abc')
-                                  .delete();
-                            },
-                          ),
-                          //],
-                          /*Text(
+                          if (DateTime.parse(_now)
+                              .isBefore(DateTime.parse(refri[index].date))) ...[
+                            //refriテーブルのid
+                            //children: <Widget>[
+                            //title: Text(refri[index].id.toString()),
+                            Text('id' + refri[index].id.toString()),
+                            //subtitle: Text(refri[index].date.toString()),
+                            Text(refri[index].date.toString()),
+                            Text(refri[index].name.toString()),
+                            ElevatedButton(
+                              child: Text('ドキュメント削除'),
+                              onPressed: () async {
+                                await FirebaseFirestore.instance
+                                    .collection('refri')
+                                    .doc(refri[index].id.toString())
+                                    .delete();
+                              },
+                            ),
+                            //],
+                            /*Text(
                                   'ID${_memolist3[index].id.toString()}',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),*/
-                          //Text(document['id']),
-                          //refriテーブルのdate
-                          //Text('${_memolist3[index].date}'),
-                          //Text(document['count']),
-                          //refriテーブルのcount
-                          //Text(
-                          //'count  ${_memolist3[index].count.toString()}'),
-                          //Text(document['']),
-                          //refriテーブルのname
-                          //ここだけ_memolist2（materialテーブル）を使う
-                          //Text(document['id']),
-                          //Text('name${_memolist[index].name}'),
-                          //削除ボタン　これを押すとエラーになるので、後で変更する予定
-                          /*SizedBox(
+                            //Text(document['id']),
+                            //refriテーブルのdate
+                            //Text('${_memolist3[index].date}'),
+                            //Text(document['count']),
+                            //refriテーブルのcount
+                            //Text(
+                            //'count  ${_memolist3[index].count.toString()}'),
+                            //Text(document['']),
+                            //refriテーブルのname
+                            //ここだけ_memolist2（materialテーブル）を使う
+                            //Text(document['id']),
+                            //Text('name${_memolist[index].name}'),
+                            //削除ボタン　これを押すとエラーになるので、後で変更する予定
+                            /*SizedBox(
                                   width: 76,
                                   height: 25,
                                   //RaisedButtonは古い　ElavatedButtonが推奨される
@@ -389,6 +441,7 @@ class _NextPageState extends State<NextPage> {
                                     },
                                   ),
                                 ),*/
+                          ],
                         ],
                         //],
                       ],
@@ -402,9 +455,9 @@ class _NextPageState extends State<NextPage> {
             //),
             //],
             //),
-          ),
-        ),
-      ),
+          ),*/
+      //),
+      //),
     );
   }
 }
