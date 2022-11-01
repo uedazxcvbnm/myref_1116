@@ -35,10 +35,14 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import './local_notifications.dart';
+
+LocalNotifications localNotifications = new LocalNotifications();
+
 final GlobalKey<NavigatorState> navBarGlobalKey = GlobalKey<NavigatorState>();
 
 //BottomNavigationBar
-void main() async {
+Future<void> main() async {
   //Stetho.initialize();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -46,6 +50,7 @@ void main() async {
   runApp(
     const riv.ProviderScope(child: MyApp()),
   );
+  localNotifications.Initialization();
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -314,6 +319,17 @@ class _MyHomePage extends State<MyHomePage> {
   //仮
   var documentID = 0;
 
+  // タイトルインプットテキストコントローラー
+  TextEditingController titleTextEditingController = TextEditingController();
+  // 内容インプットテキストコントローラー
+  TextEditingController contentsTextEditingController = TextEditingController();
+
+  // ローカル通知の初期化
+  LocalNotifications localNotifications = new LocalNotifications();
+
+  // 選択されている日付
+  //DateTime? selectDateTime = null;
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -418,6 +434,12 @@ class _MyHomePage extends State<MyHomePage> {
                                     DateFormat('yyyy-MM-dd').format(_time);
 
                                 documentID++;
+
+                                bool isComppleted = await localNotifications
+                                    .SetLocalNotification(
+                                        titleTextEditingController.text,
+                                        contentsTextEditingController.text,
+                                        DateTime.parse(_nowtime));
 
                                 await FirebaseFirestore.instance
                                     .collection('refri')
