@@ -1,11 +1,6 @@
 //NextPage ボトムナビゲーションバーの２つ目のページ（冷蔵庫の中にある食材一覧の画面）
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import './main.dart';
-import './page1.dart';
-import './page2.dart';
-import './main3_4.dart';
-import './expired.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:async';
@@ -18,11 +13,11 @@ import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 // NextPage ボトムナビゲーションバーの２つ目のページ（冷蔵庫の中にある食材一覧の画面）
-class NextPage extends StatefulWidget {
-  const NextPage({Key? key}) : super(key: key);
+class RecipePage extends StatefulWidget {
+  const RecipePage({Key? key}) : super(key: key);
   //final String title;
   @override
-  State<NextPage> createState() => _NextPageState();
+  State<RecipePage> createState() => _RecipePageState();
 }
 
 //https://zenn.dev/ryouhei_furugen/articles/ebcd36964b0182
@@ -52,7 +47,7 @@ class MainModel extends ChangeNotifier {
   Future<void> fetchrefri() async {
     // Firestoreからコレクション'books'(QuerySnapshot)を取得してdocsに代入。
     //final docs = await FirebaseFirestore.instance.collection('refri').get();
-    final docs = await FirebaseFirestore.instance.collection('refri').get();
+    final docs = await FirebaseFirestore.instance.collection('recipe').get();
 
     // getter docs: docs(List<QueryDocumentSnapshot<T>>型)のドキュメント全てをリストにして取り出す。
     // map(): Listの各要素をBookに変換
@@ -63,7 +58,11 @@ class MainModel extends ChangeNotifier {
   }
 }
 
-class _NextPageState extends State<NextPage> {
+class _RecipePageState extends State<RecipePage> {
+  //非同期関数定義
+  int apple_counter = 0;
+  var _now = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
   @override
   Widget build(BuildContext context) {
     //return MaterialApp(
@@ -81,7 +80,7 @@ class _NextPageState extends State<NextPage> {
               // 投稿メッセージ一覧を取得（非同期処理）
               // 投稿日時でソート
               stream:
-                  FirebaseFirestore.instance.collection('refri').snapshots(),
+                  FirebaseFirestore.instance.collection('recipe').snapshots(),
               builder: (context, snapshot) {
                 // データが取得できた場合
                 if (snapshot.hasData) {
@@ -92,15 +91,15 @@ class _NextPageState extends State<NextPage> {
                       return Card(
                         child: ListTile(
                             //children: <Widget>[
-                            leading: Text(document['id'].toString()),
-                            title: Text(document['name'].toString()),
-                            subtitle: Text(document['date'].toString()),
+                            //leading: Text(document['706'].toString()),
+                            title: Text(document['image'].toString()),
+                            subtitle: Text(document['URL'].toString()),
                             trailing: IconButton(
                               icon: Icon(Icons.delete),
                               onPressed: () async {
                                 // 投稿メッセージのドキュメントを削除
                                 await FirebaseFirestore.instance
-                                    .collection('refri')
+                                    .collection('recipe')
                                     .doc(document.id.toString())
                                     .delete();
                               },

@@ -8,9 +8,6 @@ import './main3_4.dart';
 //import './popup_check.dart';
 /*import './page3.dart';
 import './page4.dart';*/
-import './database_myref.dart';
-import './database_myref2.dart';
-import './database_material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:async';
@@ -20,6 +17,7 @@ import 'package:blobs/blobs.dart';
 
 import 'package:flutter/cupertino.dart';
 
+/*
 // NextPage ボトムナビゲーションバーの２つ目のページ（冷蔵庫の中にある食材一覧の画面）
 class Expired_food extends StatefulWidget {
   const Expired_food({Key? key}) : super(key: key);
@@ -33,7 +31,7 @@ class Expired_foodState extends State<Expired_food> {
   var _usStates = ["機能１", "機能２", "機能３"];
 
   //メモリスト
-  List<Refri_1> _memolist = [];
+  /*List<Refri_1> _memolist = [];
   Stream<int> initializeDemo() async* {
     _memolist = await Refri_1.getMemos();
   }
@@ -46,7 +44,7 @@ class Expired_foodState extends State<Expired_food> {
   List<Refri2> _memolist3 = [];
   Stream<int> initializeDemo3() async* {
     _memolist3 = await Refri2.getMemos2();
-  }
+  }*/
 
   //複数のテーブルを同時に取得するために必要な関数
   //https://qiita.com/ninoko1995/items/fe7115d8030a7a4cce0d
@@ -155,4 +153,4 @@ class Expired_foodState extends State<Expired_food> {
       ),
     );
   }
-}
+}*/

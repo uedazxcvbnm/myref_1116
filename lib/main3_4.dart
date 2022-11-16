@@ -5,35 +5,6 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-//画面下部のバーの左から3つめのボタン　何も作っていない
-class homePage3 extends StatefulWidget {
-  //static const routeName = '/next';
-  const homePage3({Key? key}) : super(key: key);
-  //final String title;
-  @override
-  State<homePage3> createState() => _homePage3();
-}
-
-class _homePage3 extends State<homePage3> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            // デフォルト表示
-            Text('Default'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 //画面下部のバーの左から4つめのボタン　何も作っていない
 class homePage4 extends StatefulWidget {
   //static const routeName = '/next';

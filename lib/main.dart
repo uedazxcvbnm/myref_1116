@@ -10,15 +10,9 @@ MyHomePage　食品の登録画面
 import 'package:flutter/material.dart';
 import './page1.dart';
 import './page2.dart';
-//import './popup_check.dart';
 import './nextpage.dart';
-//import './provider.dart';
+import './recipe_recommend1.dart';
 import './main3_4.dart';
-/*import './page3.dart';
-import './page4.dart';*/
-import './database_myref.dart';
-import './database_myref2.dart';
-import './database_material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:intl/intl.dart';
@@ -32,7 +26,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riv;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import './local_notifications.dart';
@@ -46,16 +39,10 @@ Future<void> main() async {
   //Stetho.initialize();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(
     const riv.ProviderScope(child: MyApp()),
   );
   localNotifications.Initialization();
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
 }
 
 class MyApp extends StatelessWidget {
@@ -101,7 +88,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     //食品を表示する画面
     NextPage(),
     //賞味期限が切れそうな食品で作った料理の紹介画面
-    homePage3(),
+    RecipePage(),
     //設定画面
     homePage4(),
   ];
@@ -119,52 +106,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*appBar: AppBar(
-        title: const Text('DEMO'),
-        backgroundColor: Colors.green,
-      ),*/
-      //1
-      /*body: PersistentTabView(
-        context,
-        //index: _selectedIndex,
-        screens: _childPageList,
-        backgroundColor: Colors.green,
-        key: navBarGlobalKey,
-        //画面を移動するボタン
-        
-        items: [
-          PersistentBottomNavBarItem(
-            icon: Icon(Icons.shopping_cart),
-            activeColorPrimary: Colors.orange,
-            inactiveColorPrimary: Colors.white,
-            //Flutter3なのでここではlabelを使うべき
-            //label: 'ラベル1',
-            //バーの色はここで設定する
-            //backgroundColor: Colors.green,
-          ),
-          PersistentBottomNavBarItem(
-              icon: Icon(Icons.home),
-              activeColorPrimary: Colors.orange,
-              inactiveColorPrimary: Colors.white
-              //label: 'ラベル2',
-              //backgroundColor: Colors.green,
-              ),
-          PersistentBottomNavBarItem(
-              icon: Icon(Icons.add),
-              activeColorPrimary: Colors.orange,
-              inactiveColorPrimary: Colors.white
-              //label: 'ラベル3',
-              //backgroundColor: Colors.green,
-              ),
-          PersistentBottomNavBarItem(
-              icon: Icon(Icons.settings),
-              activeColorPrimary: Colors.orange,
-              inactiveColorPrimary: Colors.white
-              //label: 'ラベル4',
-              //backgroundColor: Colors.green,
-              ),
-        ],
-      ),*/
       //2
       appBar: AppBar(
         //title: const Text('DEMO'),
@@ -285,35 +226,6 @@ class _MyHomePage extends State<MyHomePage> {
     //TabInfo("頻繁に買う食品", Page4()),
   ];
 
-  //複数のテーブルを同時に取得するために必要な関数を作るために定義したリスト
-  List<Refri_1> _memoList = [];
-  Stream<int> initializeDemo() async* {
-    _memoList = await Refri_1.getMemos();
-  }
-
-  List<Material_db> _memolist2 = [];
-  Stream<int> initializeDemo2() async* {
-    _memolist2 = await Material_db.getMaterial();
-  }
-
-  List<Refri2> _memolist3 = [];
-  Stream<int> initializeDemo3() async* {
-    _memolist3 = await Refri2.getMemos2();
-  }
-
-  //複数のテーブルを同時に取得するために必要な関数
-  //https://qiita.com/ninoko1995/items/fe7115d8030a7a4cce0d
-  Stream<Map<String, dynamic>> streamName() {
-    return initializeDemo()
-        .combineLatestAll([initializeDemo2(), initializeDemo3()]).map((data) {
-      return {
-        "initializeDemo()": data[0],
-        "initializeDemo2()": data[1],
-        "initializeDemo3()": data[2],
-      };
-    });
-  }
-
   //var _selectedvalue = 1;
 
   //仮
@@ -345,15 +257,6 @@ class _MyHomePage extends State<MyHomePage> {
             //return Scaffold(
             appBar: AppBar(
               //title: Text('賞味期限管理アプリ'),
-              actions: [
-                /*IconButton(
-                                  icon: Icon(Icons.android),
-                                  onPressed: () {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: ((context) => popUpPage())));
-                                  },
-                                ),*/
-              ],
               backgroundColor: Colors.green,
               bottom: PreferredSize(
                 child: TabBar(
@@ -451,46 +354,6 @@ class _MyHomePage extends State<MyHomePage> {
                                   //'name': material[index].name.toString(),
                                   'name': material[index].name,
                                 });
-
-                                //食品の個数　プラスボタンを1回タップしたら、食品の登録量が1個増える
-
-                                //var _counter = _memolist3[index].count + 1;
-
-                                //ちょっと進んだ
-                                //既に登録されている食品と同じdateのものがない場合
-                                //https://qiita.com/takois/items/6cf59811d3af5b1d33aa
-                                /*if (_nowtime != _memolist3[index].date) {
-                                            _selectedvalue = null;
-                                          } else {
-                                            _selectedvalue = _memolist3[index].id;
-                                          }*/
-                                /*if (_nowtime != refri[index].date) {
-                                            _selectedvalue = null;
-                                          } else {
-                                            _selectedvalue = refri[index].id;
-                                          }
-                                          //else{
-                                          var update_refri2 = Refri(
-                                              //id: _memoList[index].id,
-                                              id: _selectedvalue,
-                                              //count: _counter,
-                                              date: _nowtime.toString(),
-                                              name: refri[index].name);
-
-                                          //データベースをアップデート
-                                          await Refri_1.insertMemo(update_refri2);
-                                          //}
-                                          //データの取得
-                                          final List<Refri2> memos2 =
-                                              await Refri2.getMemos2();
-
-                                          super.setState(() {
-                                            //_selectedvalue_id = null;
-                                            //_memolist3 = memos2;
-                                            _memolist3 = memos2;
-                                            //setState(() {});
-                                          });
-                                        },*/
                               },
 
                               child: Container(
@@ -506,225 +369,16 @@ class _MyHomePage extends State<MyHomePage> {
                               ),
                             ),
                           ),
-
-                          //Text(material[index].image.toString()),
-                          //Row(
-                          /*ElevatedButton(
-                              child: Text('追加'),
-                              onPressed: () async {
-                                await FirebaseFirestore.instance
-                                    .collection('refri')
-                                    .doc('id_abc')
-                                    .set({
-                                  'id': 4,
-                                  'date': '2022/10/7',
-                                  'name': 'オクラ',
-                                });
-                              }),
-                          //),*/
-                          /*Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              /*GestureDetector(
-                                onTap: () {
-                                  // タップしたときの処理を記述（ここではカウンターを+1）
-                                  setState(() {
-                                    counter++;
-                                  });
-                                },
-                                // 対象の画像を記述
-                                child: Image.network(
-                                    material[index].image.toString()),
-                              ),*/
-                              /*IconButton(
-                                onPressed: () async {
-                                  //今日の日付
-                                  var now = DateTime.now();
-                                  //日付の表示形式
-                                  var _now =
-                                      DateFormat('yyyy-MM-dd').format(now);
-                                  //stringからDateTimeに変換
-                                  var _nowDate = DateTime.parse(_now);
-
-                                  //一時的なテスト 10日前
-                                  //https://qiita.com/seiboy/items/7b632103088c5ed65082
-                                  _nowDate =
-                                      _nowDate.add(Duration(days: 1) * -1);
-                                  //_nowDate =_nowDate.add(Duration(days: 1) * 1);
-                                  //_nowDate=_nowDate.add(Duration(days:2)*1);
-
-                                  //テーブルの値を取り出す
-                                  ///////_memolist2 = await Material_db.getExday();
-                                  //materialテーブルからexdayカラムを取り出す
-                                  //var sql3 = _memolist2[index].id;
-                                  //int sql4 = _memolist2[sql3].exday;
-                                  var sql3 = material[index].id;
-                                  int sql4 = material[sql3].exday;
-
-                                  //賞味期限の計算　賞味期限＝今日の日付+materialテーブルのexdayカラム
-                                  var _time =
-                                      _nowDate.add(Duration(days: sql4));
-                                  var _nowtime =
-                                      DateFormat('yyyy-MM-dd').format(_time);
-                                  //食品の個数　プラスボタンを1回タップしたら、食品の登録量が1個増える
-
-                                  //var _counter = _memolist3[index].count + 1;
-
-                                  //ちょっと進んだ
-                                  //既に登録されている食品と同じdateのものがない場合
-                                  //https://qiita.com/takois/items/6cf59811d3af5b1d33aa
-                                  /*if (_nowtime != _memolist3[index].date) {
-                                    _selectedvalue = null;
-                                  } else {
-                                    _selectedvalue = _memolist3[index].id;
-                                  }*/
-                                  /*if (_nowtime != refri[index].date) {
-                                    _selectedvalue = null;
-                                  } else {
-                                    _selectedvalue = refri[index].id;
-                                  }
-                                  //else{
-                                  var update_refri2 = Refri(
-                                      //id: _memoList[index].id,
-                                      id: _selectedvalue,
-                                      //count: _counter,
-                                      date: _nowtime.toString(),
-                                      name: refri[index].name);
-
-                                  //データベースをアップデート
-                                  await Refri_1.insertMemo(update_refri2);
-                                  //}
-                                  //データの取得
-                                  final List<Refri2> memos2 =
-                                      await Refri2.getMemos2();
-
-                                  super.setState(() {
-                                    //_selectedvalue_id = null;
-                                    //_memolist3 = memos2;
-                                    _memolist3 = memos2;
-                                    //setState(() {});
-                                  });
-                                },
-                                //プラスボタン　アイコンの指定
-                                icon: Icon(Icons.add),
-                                iconSize: 20,*/
-                              ),*/
-                            ],
-                          ),*/
-                          //materialテーブルのid
-                          /*Text('ID${_memolist2[index].id.toString()}'),
-                                                //materialテーブルのexday 保存期間の基準
-                                                //参考サイトhttps://foo-d.info/vegetables/
-                                                Text(
-                                                  '${_memolist2[index].exday.toString()}日後',
-                                                ),
-                                                //refriテーブルのname
-                                                Text('${_memolist2[index].name}'),
-                                                //画像表示 materialテーブルのimage
-                                                Container(
-                                                  width: 80,
-                                                  height: 80,
-                                                  child: Image.asset('${_memolist2[index].image}'),
-                                                ),
-                                                //食品のカウントアップをするボタン　食品の個数を登録
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    IconButton(
-                                                      onPressed: () async {
-                                                        //今日の日付
-                                                        var now = DateTime.now();
-
-                                                        //日付の表示形式
-                                                        var _now = DateFormat('yyyy-MM-dd').format(now);
-                                                        //stringからDateTimeに変換
-                                                        var _nowDate = DateTime.parse(_now);
-
-                                                        //一時的なテスト 10日前
-                                                        //https://qiita.com/seiboy/items/7b632103088c5ed65082
-                                                        //_nowDate=_nowDate.add(Duration(days:1)*-1);
-                                                        _nowDate = _nowDate.add(Duration(days: 1) * 1);
-                                                        //_nowDate=_nowDate.add(Duration(days:2)*1);
-
-                                                        //テーブルの値を取り出す
-                                                        ///////_memolist2 = await Material_db.getExday();
-                                                        //materialテーブルからexdayカラムを取り出す
-                                                        var sql3 = _memolist2[index].id;
-                                                        int sql4 = _memolist2[sql3].exday;
-
-                                                        //賞味期限の計算　賞味期限＝今日の日付+materialテーブルのexdayカラム
-                                                        var _time = _nowDate.add(Duration(days: sql4));
-                                                        var _nowtime =
-                                                            DateFormat('yyyy-MM-dd').format(_time);
-
-                                                        //食品の個数　プラスボタンを1回タップしたら、食品の登録量が1個増える
-
-                                                        var _counter = _memolist3[index].count + 1;
-
-                                                        //ちょっと進んだ
-                                                        //既に登録されている食品と同じdateのものがない場合
-                                                        //https://qiita.com/takois/items/6cf59811d3af5b1d33aa
-                                                        if (_nowtime != _memolist3[index].date) {
-                                                          _selectedvalue = null;
-                                                        } else {
-                                                          _selectedvalue = _memolist3[index].id;
-                                                        }
-                                                        //else{
-                                                        var update_refri2 = Refri_1(
-                                                            //id: _memoList[index].id,
-                                                            id: _selectedvalue,
-                                                            count: _counter,
-                                                            date: _nowtime.toString(),
-                                                            name: _memoList[index].name);
-
-                                                        //データベースをアップデート
-                                                        await Refri_1.insertMemo(update_refri2);
-                                                        //}
-                                                        //データの取得
-                                                        final List<Refri2> memos2 =
-                                                            await Refri2.getMemos2();
-
-                                                        super.setState(() {
-                                                          //_selectedvalue_id = null;
-                                                          //_memolist3 = memos2;
-                                                          _memolist3 = memos2;
-                                                          //setState(() {});
-                                                        });
-                                                      },
-                                                      //プラスボタン　アイコンの指定
-                                                      icon: Icon(Icons.add),
-                                                      iconSize: 20,
-                                                    ),
-                                                  ],
-                                                ),*/
                         ],
                       ),
                     );
                   },
                 );
-                //},
-                //),
-                //);
               },
             ),
-            //);
-            //],
-            //),
-
-            //],
           ),
         ),
       ),
     );
-  }
-}
-
-class FirebaseMessagingService {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  void fcmGetToken() async {
-    /// モバイル向け
-    final fcmToken = await messaging.getToken();
-    print(fcmToken);
   }
 }
